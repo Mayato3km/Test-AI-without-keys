@@ -9,7 +9,7 @@
     "setup": "echo 'Установка зависимостей...' && npm install"
   },
   "keywords": ["discord", "bot", "ai", "local", "javascript"],
-  "author": "Ваше Имя",
+  "author": "Mayato aka mi0ri",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.14.1",
