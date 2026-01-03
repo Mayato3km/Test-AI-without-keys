@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "setup": "echo 'Установка зависимостей...' && npm install"
+    "setup": "echo 'Запуск Discord AI бота...' && npm install"
   },
   "keywords": ["discord", "bot", "ai", "local", "javascript"],
   "author": "Mayato aka mi0ri",
