@@ -1,0 +1,6 @@
+const config = {
+    API: '',
+    prefix: '\/'
+}
+
+module.exports = config;

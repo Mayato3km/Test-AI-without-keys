@@ -1,0 +1,21 @@
+{
+  "name": "discord-ai-bot",
+  "version": "2.0.0",
+  "description": "Локальный Discord AI бот без API ключей",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "setup": "echo 'Установка зависимостей...' && npm install"
+  },
+  "keywords": ["discord", "bot", "ai", "local", "javascript"],
+  "author": "Ваше Имя",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
