@@ -43,8 +43,8 @@ Git (опционально)
 
 ## 2. Клонирование репозитория
 bash
-git clone https://github.com/ваш-репозиторий/discord-ai-bot.git
-cd discord-ai-bot
+git clone https://github.com/Mayato3km/Test-AI-without-keys
+cd Test-AI-without-keys
 ## 3. Установка зависимостей
 bash
 ```npm install```
@@ -387,6 +387,7 @@ https://guns.lol/mayato
 🛠️ Гибкий - легко настраивается
 
 📚 Открытый - полный доступ к коду
+
 
 
 
