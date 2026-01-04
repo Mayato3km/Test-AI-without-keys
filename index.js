@@ -72,7 +72,7 @@ const commands = [
             subcommand
                 .setName('help')
                 .setDescription('Показать справку по командам')
-        )м
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('stats')
