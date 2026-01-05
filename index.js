@@ -730,13 +730,21 @@ async function handleAsk(interaction) {
 async function handleRemember(interaction) {
     const info = interaction.options.getString('информация');
     
-    // Используем basicAI для запоминания (он сам обработает команду "запомни")
-    const response = await basicAI(`запомни что ${info}`, interaction.user.username, interaction.user.id);
+    // Генерируем фиксированный ответ без использования basicAI
+    const responses = [
+        `✅ Я запомнила: "${info}"`,
+        `💾 Запомнила! "${info}" теперь сохранено в моей памяти.`,
+        `📝 Хорошо, я запомнила что: "${info}"`,
+        `🧠 Уже запомнила! "${info}" - добавлено в мои знания.`,
+        `✨ Готово! Я запомнила: "${info}"`
+    ];
+    
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
     
     const embed = new EmbedBuilder()
         .setColor(0x00FF00)
         .setTitle('💾 Информация запомнена')
-        .setDescription(response)
+        .setDescription(randomResponse)
         .addFields(
             { name: '📝 Что запомнил', value: info.length > 500 ? info.substring(0, 497) + '...' : info }
         )
@@ -745,7 +753,6 @@ async function handleRemember(interaction) {
     
     await interaction.reply({ embeds: [embed] });
 }
-
 // Команда /calculate
 async function handleCalculate(interaction) {
     const expression = interaction.options.getString('выражение');

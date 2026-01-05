@@ -235,7 +235,7 @@ class LocalAI {
     calculateMath(expression) {
         try {
             // Извлекаем числа и оператор
-            const match = expression.match(/(\d+(?:\.\d+)?)\s*([+\\-*/])\s*(\d+(?:\.\d+)?)/);
+            const match = expression.match(/(\d+(?:\.\d+)?)\s*([+\/*-])\s*(\d+(?:\.\d+)?)/);
             if (!match) {
                 return 'Не могу распознать математическое выражение. Формат: число оператор число (например: 5+3, 10*2)';
             }
@@ -265,7 +265,7 @@ class LocalAI {
 
     // Проверка на математическое выражение
     isMathExpression(message) {
-        return /\d+\s*[+\\-*/]\s*\d+/.test(message);
+        return /\d+\s*[+\/*-]\s*\d+/.test(message);
     }
 
     // Обработка извлечения информации
