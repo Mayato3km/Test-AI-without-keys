@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Многопоточный клиент</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .controls { margin: 20px 0; }
+        button { margin: 5px; padding: 10px 15px; }
+        .output { 
+            background: #f5f5f5; 
+            padding: 15px; 
+            margin-top: 20px; 
+            border-radius: 5px; 
+            max-height: 400px; 
+            overflow-y: auto;
+        }
+        .request { background: #e3f2fd; margin: 5px 0; padding: 10px; }
+        .response { background: #e8f5e8; margin: 5px 0; padding: 10px; }
+        .metric { display: inline-block; margin-right: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Многопоточный контроллер</h1>
+        
+        <div class="controls">
+            <button onclick="connect()">Подключиться</button>
+            <button onclick="disconnect()">Отключиться</button>
+            <button onclick="sendRequest('calculate')">Вычисления</button>
+            <button onclick="sendRequest('process_data')">Обработка данных</button>
+            <button onclick="sendRequest('heavy_computation')">Тяжелые вычисления</button>
+            <button onclick="sendBatchRequests()">Пакет запросов</button>
+            <button onclick="getMetrics()">Метрики</button>
+        </div>
+        
+        <div>
+            <label>Количество потоков: </label>
+            <input type="number" id="threadCount" value="10" min="1" max="100">
+        </div>
+        
+        <div id="metrics" class="metrics"></div>
+        
+        <div id="output" class="output"></div>
+    </div>
+
+    <script>
+        let socket = null;
+        let requestCounter = 0;
+        const startTimes = new Map();
+        
+        function connect() {
+            const url = 'ws://localhost:8080/';
+            socket = new WebSocket(url);
+            
+            socket.onopen = () => {
+                log('Подключено к серверу');
+                updateConnectionStatus(true);
+            };
+            
+            socket.onmessage = (event) => {
+                const response = JSON.parse(event.data);
+                const elapsed = Date.now() - startTimes.get(response.RequestId);
+                
+                logResponse(`Запрос ${response.RequestId} обработан`, {
+                    workerId: response.WorkerId,
+                    coreId: response.CoreId,
+                    time: `${response.ProcessingTime}ms`,
+                    totalTime: `${elapsed}ms`,
+                    result: response.Result
+                });
+                
+                startTimes.delete(response.RequestId);
+                updateMetrics();
+            };
+            
+            socket.onclose = () => {
+                log('Отключено от сервера');
+                updateConnectionStatus(false);
+            };
+            
+            socket.onerror = (error) => {
+                log(`Ошибка: ${error.message}`);
+            };
+        }
+        
+        function disconnect() {
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
+        }
+        
+        function sendRequest(operation) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                alert('Сначала подключитесь к серверу');
+                return;
+            }
+            
+            const requestId = `req_${++requestCounter}`;
+            const data = generateData();
+            
+            const request = {
+                Operation: operation,
+                Data: data,
+                Parameters: {
+                    timestamp: new Date().toISOString(),
+                    complexity: Math.floor(Math.random() * 100) + 1
+                }
+            };
+            
+            startTimes.set(requestId, Date.now());
+            socket.send(JSON.stringify(request));
+            
+            logRequest(`Отправлен запрос ${requestId}`, {
+                operation,
+                dataLength: data.length,
+                requestId
+            });
+        }
+        
+        async function sendBatchRequests() {
+            const count = parseInt(document.getElementById('threadCount').value);
+            
+            log(`Отправка ${count} параллельных запросов...`);
+            
+            const operations = ['calculate', 'process_data', 'heavy_computation'];
+            
+            for (let i = 0; i < count; i++) {
+                const operation = operations[Math.floor(Math.random() * operations.length)];
+                setTimeout(() => sendRequest(operation), Math.random() * 100);
+            }
+        }
+        
+        function getMetrics() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                alert('Сначала подключитесь к серверу');
+                return;
+            }
+            
+            const request = {
+                Operation: 'get_metrics',
+                Data: '',
+                Parameters: {}
+            };
+            
+            socket.send(JSON.stringify(request));
+        }
+        
+        function generateData() {
+            const length = Math.floor(Math.random() * 1000) + 100;
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            
+            return result;
+        }
+        
+        function log(message) {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.className = 'log';
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function logRequest(title, details) {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.className = 'request';
+            div.innerHTML = `
+                <strong>📤 ${title}</strong><br>
+                ${Object.entries(details).map(([k, v]) => 
+                    `<small>${k}: ${JSON.stringify(v)}</small>`).join('<br>')}
+            `;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function logResponse(title, details) {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.className = 'response';
+            div.innerHTML = `
+                <strong>📥 ${title}</strong><br>
+                ${Object.entries(details).map(([k, v]) => 
+                    `<small>${k}: ${JSON.stringify(v)}</small>`).join('<br>')}
+            `;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function updateConnectionStatus(connected) {
+            const buttons = document.querySelectorAll('button:not(:first-child)');
+            buttons.forEach(btn => {
+                btn.disabled = !connected;
+            });
+        }
+        
+        function updateMetrics() {
+            // Здесь можно обновлять метрики производительности
+            const pending = startTimes.size;
+            const metricsDiv = document.getElementById('metrics');
+            metricsDiv.innerHTML = `
+                <div class="metric">Обработано: ${requestCounter}</div>
+                <div class="metric">В ожидании: ${pending}</div>
+            `;
+        }
+    </script>
+</body>
+</html>

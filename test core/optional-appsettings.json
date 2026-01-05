@@ -1,0 +1,13 @@
+{
+  "MultiCoreController": {
+    "MaxWorkerThreads": 8,
+    "WebSocketPorts": [8080, 8081],
+    "Hosts": ["localhost", "127.0.0.1"],
+    "QueueCapacity": 1000,
+    "WorkerTimeout": 30000,
+    "EnableAffinity": true,
+    "MetricsInterval": 5000,
+    "LogLevel": "Information",
+    "AllowedOrigins": ["http://localhost:3000", "http://127.0.0.1:5500"]
+  }
+}
