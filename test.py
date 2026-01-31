@@ -22,10 +22,10 @@ def text_to_json_table(text, delimiter='\t'):
     
     return json.dumps(data, indent=2, ensure_ascii=False)
 
-sample_text = """Имя\tВозраст\tГород
-Иван\t25\tМосква
-Анна\t30\tСанкт-Петербург
-Петр\t35\tКазань"""
+sample_text = """Ник\tВремяМинута\tдампинформаций
+**\t25\t**
+**\t30\t**
+**\t35\t** """
 
 json_output = text_to_json_table(sample_text, delimiter='\t')
 print(json_output)
@@ -63,10 +63,10 @@ function textToJsonTable(text, delimiter = '\t') {
     return JSON.stringify(data, null, 2);
 }
 
-const sampleText = `Имя\tВозраст\tГород
-Иван\t25\tМосква
-Анна\t30\tСанкт-Петербург
-Петр\t35\tКазань`;
+const sampleText = `Ник\tВремяМинута\tдампинформаций
+**\t25\t**
+**\t30\t**
+**\t35\t**`;
 
 const jsonOutput = textToJsonTable(sampleText, '\t');
 console.log(jsonOutput);
