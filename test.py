@@ -32,3 +32,45 @@ print(json_output)
 
 with open('table.json', 'w', encoding='utf-8') as f:
     f.write(json_output)
+
+
+
+тут уже под js файл
+_____________________________________________________________________________
+function textToJsonTable(text, delimiter = '\t') {
+    const lines = text.trim().split('\n');
+    
+    if (lines.length === 0) {
+        return JSON.stringify([], null, 2);
+    }
+    
+    const headers = lines[0].split(delimiter).map(h => h.trim());
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
+            const values = lines[i].split(delimiter).map(v => v.trim());
+            const row = {};
+            
+            headers.forEach((header, index) => {
+                row[header] = values[index] !== undefined ? values[index] : null;
+            });
+            
+            data.push(row);
+        }
+    }
+    
+    return JSON.stringify(data, null, 2);
+}
+
+const sampleText = `Имя\tВозраст\tГород
+Иван\t25\tМосква
+Анна\t30\tСанкт-Петербург
+Петр\t35\tКазань`;
+
+const jsonOutput = textToJsonTable(sampleText, '\t');
+console.log(jsonOutput);
+
+const fs = require('fs');
+fs.writeFileSync('table.json', jsonOutput, 'utf-8');
+_____________________________________________________________________________
